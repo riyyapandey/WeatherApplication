@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://images.hdqwalls.com/download/minimalist-mountains-landscape-scenery-n4-1336x768.jpg');
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-size: 100%;
+    }
+
+    #weather-container {
+      text-align: center;
+      background-color: rgba(234, 234, 210, 0.7);
+      padding:80px;
+      border-radius: 50px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #loading {
+      display: none;
+    }
+
+    #error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="weather-container">
+    <h1>Weather App</h1>
+    <div>
+      <label for="location"><b>Enter location:</b></label>
+      <input type="text" id="location" placeholder="City, Country">
+      <button onclick="getWeather()"><b>Get Weather</b></button>
+    </div>
+    <div id="loading">Loading...</div>
+    <div id="error"></div>
+    <div id="weather-info"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const locationInput = document.getElementById('location');
+      const location = locationInput.value;
+
+      
+      if (location.trim() === '') {
+        document.getElementById('error').innerText = 'Please enter a location.';
+        return;
+      }
+
+      
+      document.getElementById('error').innerText = '';
+      document.getElementById('weather-info').innerText = '';
+
+      
+      document.getElementById('loading').style.display = 'block';
+
+      
+      const apiKey = '15886c8d02dc840586a49733d0974831';
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (response.ok) {
+          
+          document.getElementById('weather-info').innerText = `
+            ${data.name}, ${data.sys.country}
+            \nTemperature: ${data.main.temp}°C
+            \nCondition: ${data.weather[0].description}
+          `;
+        } else {
+          
+          document.getElementById('error').innerText = `Error: ${data.message}`;
+        }
+      } catch (error) {
+        
+        document.getElementById('error').innerText = 'An error occurred while fetching data.';
+      } finally {
+        // Hide loading message
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+  </script>
+
+</body>
+</html>
